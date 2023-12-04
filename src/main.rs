@@ -5,23 +5,21 @@ fn main() {
     let file = File::open("input.txt").unwrap();
     let mut sum: u32 = 0;
     for line in BufReader::new(file).lines() {
-        let mut first: Option<u32> = None;
-        let mut last: Option<u32> = None;
+        let first = line
+            .as_ref()
+            .unwrap()
+            .chars()
+            .find(|c| c.is_digit(10))
+            .map(|c| c.to_digit(10).unwrap());
 
-        for char in line.unwrap().chars() {
-            let Some(num) = char.to_digit(10) else {
-                continue;
-            };
-            match (first, last) {
-                (Some(_), Some(_)) => { last = Some(num); },
-                (Some(_), None) =>{ last = Some(num); },
-                (None, Some(_)) => { panic!("First not assigned while last is!") },
-                (None, None) => { first = Some(num); },
-            }
-        }
+        let last = line
+            .unwrap()
+            .chars()
+            .rfind(|c| c.to_digit(10) != None)
+            .map(|c| c.to_digit(10).unwrap());
 
         sum += match (first, last) {
-            (Some(f), Some(l)) => f + l,
+            (Some(f), Some(l)) => f * 10 + l,
             _ => 0,
         }
     }
